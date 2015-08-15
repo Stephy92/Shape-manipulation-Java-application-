@@ -5,10 +5,20 @@ import java.util.Random;
 
 public class Circle extends draw
 {
-	 Random rd = new Random();
-	 int x = rd.nextInt(360);
-	 int y = rd.nextInt(360);
-	 public Circle(Color shapeColor)
+	  Random rd = new Random();
+		
+	  	int maxX = 450;
+		int minX = 0;
+
+		int maxY = 250;
+		int minY = 80;
+
+	    // nextInt is normally exclusive of the top value,
+	    // so add 1 to make it inclusive
+		int x = rd.nextInt((maxX - minX) + 1) + minX;
+		int y = rd.nextInt((maxY - minY) + 1) + minY;
+	    
+		public Circle(Color shapeColor)
 		{
 			super(shapeColor);
 		}
