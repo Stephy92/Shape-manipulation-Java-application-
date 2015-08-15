@@ -2,19 +2,27 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;
 
-import javax.swing.*;
-
 public class Rectangle extends draw {
     Random rd = new Random();
 		
-	int x = rd.nextInt(400);
-	int y = rd.nextInt(200);
+	int maxX = 450;
+	int minX = 0;
+
+	int maxY = 250;
+	int minY = 80;
+
+    // nextInt is normally exclusive of the top value,
+    // so add 1 to make it inclusive
+	int x = rd.nextInt((maxX - minX) + 1) + minX;
+	int y = rd.nextInt((maxY - minY) + 1) + minY;
+    
 	 
 	public Rectangle(Color shapeColor)
 	{
 		super(shapeColor);
 	}
 	
+
 	public void shapes(Graphics g)
     {
     	g.setColor(getColor());
