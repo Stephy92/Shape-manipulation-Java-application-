@@ -3,41 +3,24 @@ import java.awt.Graphics;
 import java.util.Random;
 
 
-public class Circle extends draw
+public class Circle extends Shape
 {
-	  Random rd = new Random();
-		
-	  	int maxX = 450;
-		int minX = 0;
-
-		int maxY = 250;
-		int minY = 80;
-
-	    // nextInt is normally exclusive of the top value,
-	    // so add 1 to make it inclusive
-		int x = rd.nextInt((maxX - minX) + 1) + minX;
-		int y = rd.nextInt((maxY - minY) + 1) + minY;
-	    
-		public Circle(Color shapeColor)
-		{
-			super(shapeColor);
-		}
-		
-	public void shapes(Graphics g) 
-	{
-		g.setColor(getColor());
-		g.drawOval(x, y, 60, 60);
-	}
-	 public int getX(){
-		 return this.x;
-	 }
-	 public int getY(){
-		 return this.y;
-	 }
-	 public int getWidth(){
-		 return (60);
-	 }
-	 public int getHeight(){
-		 return (60);
-	 }
-}
+	void draw(Graphics g) {
+       /* g.setColor(color);
+        g.fillOval(left,top,width,height);*/
+        g.setColor(getColor());
+        g.drawOval(left,top,width,width);
+     }
+     boolean containsPoint(int x, int y) {
+           // Check whether (x,y) is inside this oval, using the
+           // mathematical equation of an ellipse.
+        double rx = width/2.0;   // horizontal radius of ellipse
+        double ry = width/2.0;  // vertical radius of ellipse 
+        double cx = left + rx;   // x-coord of center of ellipse
+        double cy = top + ry;    // y-coord of center of ellipse
+        if ( (ry*(x-cx))*(ry*(x-cx)) + (rx*(y-cy))*(rx*(y-cy)) <= rx*rx*ry*ry )
+           return true;
+        else
+          return false;
+     }
+  }

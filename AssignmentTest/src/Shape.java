@@ -1,32 +1,51 @@
-import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 
-public class Shape extends JPanel{
-	/*String[] shape = {"Rectangle","Oval","Square","Circle"};
-	JComboBox cb1 = new JComboBox(shape);
-	*/
-	public void paintComponent(Graphics g){
-		super.paintComponent(g);
-		
-		this.setBackground(Color.WHITE);
-		
-		g.setColor(Color.BLUE);
-		g.drawRect(5, 40, 90, 55);
-		g.fillRect(100, 40, 90, 55);
-		
-		g.setColor(Color.CYAN);
-		g.fillRoundRect(195, 40, 90, 55, 50, 50);
-		g.drawRoundRect(290, 40, 90, 55, 20, 20);
-		
-		g.setColor(Color.GREEN);
-		g.draw3DRect(5, 100, 90, 55, true);
-		g.fill3DRect(100, 100, 90, 50, false);
-		
-		g.setColor(Color.MAGENTA);
-		g.drawOval(195, 100, 90, 55);
-		g.fillOval(290, 100, 90, 55);
-		
-		g.drawPolygon(new int[] {10, 20, 30}, new int[] {100, 20, 100}, 3);
+import javax.swing.JPanel;
+
+
+public abstract class Shape extends JPanel{
+	
+	int left, top;      // Position of top left corner of rectangle that bounds this shape.
+    int width, height;  // Size of the bounding rectangle.
+    Color color = Color.black;  // Color of this shape.
+  
+	
+	public void reshape(int left, int top, int width, int height) {
+        // Set the position and size of this shape.
+     this.left = left;
+     this.top = top;
+     this.width = width;
+     this.height = height;
+  }
+
+    
+    void moveBy(int dx, int dy) {
+           // Move the shape by dx pixels horizontally and dy pixels vertically
+           // (by changing the position of the top-left corner of the shape).
+       left += dx;
+       top += dy;
+    }
+
+    public void setColor(Color newColor) {
+           // Set the color of this shape
+       this.color = newColor;
+    }
+    public Color getColor()
+	{
+		return color;
 	}
+
+    boolean containsPoint(int x, int y) {
+          // Check whether the shape contains the point (x,y).
+          // By default, this just checks whether (x,y) is inside the
+          // rectangle that bounds the shape.  This method should be
+          // overridden by a subclass if the default behavior is not
+          // appropriate for the subclass.
+       if (x >= left && x < left+width && y >= top && y < top+height)
+          return true;
+       else
+          return false;
+    }
+
+    abstract void draw(Graphics g); 
 }
