@@ -3,7 +3,6 @@ import javax.swing.*;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -14,365 +13,245 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Random;
 
-public class TestMain extends JFrame implements MouseMotionListener, MouseListener{ 
+public class TestMain extends JPanel implements MouseMotionListener, MouseListener, ActionListener{ 
 
-	Color currentColor = new Color(0,0,0);
+	TestMain() {
+        // Constructor: set background color to white set up listeners to respond to mouse actions
+      setBackground(Color.white);
+      addMouseListener(this);
+      addMouseMotionListener(this);
+   }  
+	Color currentColor = Color.black;
 	//private Graphics g;
 	public draw dr1;
-	int tempX;
-	int tempY;
-	JPanel p1 = new JPanel();
-	JPanel p2 = new JPanel();
-	JButton add = new JButton("Add");
-	JButton delete = new JButton("Delete");
-	JButton align = new JButton("Align");
-	JButton clr = new JButton("Set Color");
-	String [] Shape = {"Rectangle","Oval","Cirlce","Round Rectangle", "Triangle"};
-	JComboBox ShapeTitle = new JComboBox(Shape);
-	//int[] area;
-	Graphics g;
-	/*Rectangle currentObject;
-	Oval currentOval;
-	*/
-	ArrayList<Integer> rect = new ArrayList<Integer>();
-	ArrayList<Integer> cir = new ArrayList<Integer>();
-	ArrayList<Integer> current = new ArrayList<Integer>();
 	
-	Rectangle rect1 = new Rectangle(0,0,100,50);
-	int preX, preY;
-	boolean isFirstTime = true;
-	Rectangle area;
-	boolean pressOut = false;
+	ArrayList shp = new ArrayList(); 
 	  
-	public TestMain (){
-		super ("Simple Shape");
-		Container c = this.getContentPane();
-		c.setLayout(new BorderLayout());
-		
-		//Add buttons into panel
-		p1.add(add);
-		p1.add(delete);
-		p1.add(align);
-		p1.add(ShapeTitle);
-		p1.add(clr);
-		//p1.setLayout();
-				
-		p2.setBackground(Color.WHITE);
-		//add panel into container
-		c.add(p1, BorderLayout.NORTH);
-		c.add(p2, BorderLayout.CENTER);
-		
-		//add button listener and action for add, delete, and also align button
-		ButtonListener b1 = new ButtonListener();
-		add.addActionListener(b1);
-		delete.addActionListener(b1);
-		align.addActionListener(b1);
-	   
-		//add button listener and action for color button
-		colorButtonListerner btnColorFunction = new colorButtonListerner();
-		clr.addActionListener(btnColorFunction);
-	   
-		//add mouse listener and motion
-		addMouseMotionListener(this);
-		addMouseListener(this);
-		
-		//set frame settings
-		setBackground(Color.white);
-		this.pack();
-	    this.setSize(600,300);
-	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    this.setLocationRelativeTo(null);
-	    this.setVisible(true);
-	    this.setResizable(false);
-	    
-	    
-	}
 	
 	//function of button listener and what action its take 
-	private class ButtonListener implements ActionListener{
-
 		public void actionPerformed(ActionEvent e) {
-			String b2 = (String) ShapeTitle.getSelectedItem();
+			//if (e.getSource() instanceof JButton) {
+			String command = e.getActionCommand();
+			//String b2 = (String) ((JComboBox)e.getSource()).getSelectedItem();
 			
-		  
 			//when click add button
-			if(e.getSource()==add)
+			if(command.equals("Add"))
 			{
-				//will come out rectangle shape when choose Rectangle from combobox
-				if(b2 == "Rectangle")
-				{
-					dr1 = new Path2DExample(currentColor);
-					rect1.setLocation(dr1.getX(),dr1.getY());
-					dr1.shapes(getGraphics());
-					rect.add(dr1.getX());
-					rect.add(dr1.getY());
-					rect.add(dr1.getWidth());
-					rect.add(dr1.getHeight());
-					
-				}
-				//will come out oval shape when choose Oval from combobox
-				else if(b2 == "Oval")
-				{
-					/*dr1 = new Circle(currentColor);
-					dr1.shapes(getGraphics());
-					cir.add(dr1.getX());
-					cir.add(dr1.getY());
-					cir.add(dr1.getWidth());
-					cir.add(dr1.getHeight());
-*/					
-					
-					dr1 = new Oval(currentColor);
-					dr1.shapes(getGraphics());
-					cir.add(dr1.getX());
-					cir.add(dr1.getY());
-					cir.add(dr1.getWidth());
-					cir.add(dr1.getHeight());
-				}
 				
-				else if(b2 == "Cirlce")
-				{
-					dr1 = new Circle(currentColor);
-					dr1.shapes(getGraphics());
-					cir.add(dr1.getX());
-					cir.add(dr1.getY());
-					cir.add(dr1.getWidth());
-					cir.add(dr1.getHeight());
-
-				}
-				//will come out triangle shape when choose Triangle from combobox
-				else if(b2 == "Triangle")
-				{
-					dr1 = new Triangle(currentColor);
-					dr1.shapes(getGraphics());
-					
-				}
-				else
-					System.out.println("Nothing");
+				//will come out rectangle shape when choose Rectangle from combobox
+				if (draw.getSelectedItem() == "Rectangle")
+					addShape(new Rectangle());
+		        else if (draw.getSelectedItem() == "Oval")
+		        	addShape(new Oval());
+		        else if (draw.getSelectedItem() == "Circle")
+		        	addShape(new Circle());
+		        else if(draw.getSelectedItem() == "Triangle")
+		        	addShape(new Triangle());
+		        else if(draw.getSelectedItem() == "Round Rectangle")
+		        	addShape(new RoundRectangle());
+		        else if(draw.getSelectedItem() == "Square")
+		        	addShape(new Square());
 			}
-			else if (e.getSource()==delete)
+			else if (command.equals("Delete"))
 				repaint();
-			else if(e.getSource()== align)
+			else if(command.equals("Align"))
 				System.out.println("Nothing");
+			else if(command.equals("Set Color")){
+				colorActionPerformed(e);
+			}
 							
-		}
+			}
 		
 		
-	}	
+		
+	
+	void addShape(Shape shape) {
+        // Add the shape to the canvas, and set its size/position and color.
+        // The shape is added at the top-left corner, with size 80-by-50.
+        // Then redraw the canvas to show the newly added shape.
+		
+		Random rd = new Random();
+		
+		int maxX = 650;
+		int minX = 0;
+
+		int maxY = 350;
+		int minY = 0;
+
+	    // nextInt is normally exclusive of the top value,
+	    // so add 1 to make it inclusive
+		int x = rd.nextInt((maxX - minX) + 1) + minX;
+		int y = rd.nextInt((maxY - minY) + 1) + minY;
+		shape.setColor(currentColor);
+		shape.reshape(x,y,100,50);
+		shp.add(shape);
+		repaint();
+	}
 	
 	//function of button listener and what action its take
-	public class colorButtonListerner implements ActionListener
-	{
-		public void actionPerformed(ActionEvent e)
-		{
-			colorActionPerformed(e);
-		}
-	}
+	 
 	
+	 Shape shapeBeingDragged = null;  // This is null unless a shape is being dragged.
+     // A non-null value is used as a signal that dragging
+     // is in progress, as well as indicating which shape
+     // is being dragged.
+
+	 int prevDragX;  // During dragging, these record the x and y coordinates of the
+	 int prevDragY;  //    previous position of the mouse.
 
 	public void mousePressed(MouseEvent e) {
-		preX = rect1.x - e.getX();
-	    preY = rect1.y - e.getY();
-
-	    if (dr1.getX() < e.getX() && dr1.getY() < e.getY() &&
-	    		dr1.getX() + dr1.getWidth() > e.getX()  &&
-	    		dr1.getY() + dr1.getHeight() > e.getY())
-	    	{
-	    	updateLocation(e);
-	    	System.out.println("Clicked");
-	    	}
-	    else {
-	      ShapeMover.label.setText("Drag it.");
-	      pressOut = true;
-	    }
-	    System.out.println("Clicked");
-		  }
-	void updateSize(MouseEvent e) {
-        /*int x = e.getX();
-        int y = e.getY();
-        currentRect.setSize(x - currentRect.x,
-                            y - currentRect.y);
-        updateDrawableRect(getWidth(), getHeight());
-        Rectangle totalRepaint = rectToDraw.union(previouseRectDrawn); 
-        repaint(totalRepaint.x, totalRepaint.y,
-                totalRepaint.width, totalRepaint.height);*/
-    }
-
-	
-	public static void main(String[] args){
-		new TestMain();
+		int x = e.getX();  // x-coordinate of point where mouse was clicked
+		int y = e.getY();  // y-coordinate of point 
+		int top = shp.size();
+	     for (int i = 0; i < top; i++) {
+	     Shape s = (Shape)shp.get(i);
+	     if (s.containsPoint(x,y)) {
+	    	 s.setColor(Color.RED);
+	     }
+	     }
+       
+       repaint();
+		// User has pressed the mouse.  Find the shape that the user has clicked on, if
+        // any.  If there is a shape at the position when the mouse was clicked, then
+        // start dragging it.  If the user was holding down the shift key, then bring
+        // the dragged shape to the front, in front of all the other shapes.
+   
+     for ( int i = shp.size() - 1; i >= 0; i-- ) {  // check shapes from front to back
+        Shape s = (Shape)shp.get(i);
+        if (s.containsPoint(x,y)) {
+           shapeBeingDragged = s;
+           prevDragX = x;
+           prevDragY = y;
+           if (e.isShiftDown()) {  // Bring the shape to the front by moving it to
+              shp.remove(s);      //       the end of the list of shapes.
+              shp.add(s);
+              repaint();  // repaint canvas to show shape in front of other shapes
+           }
+           return;
+        }
+     }
 	}
-
+	
 	public void mouseClicked(MouseEvent e) {
 		
-		// TODO Auto-generated method stub
-		//x = dr1.getX() - e.getX();
-		//y = dr1.getY() - e.getY();
-		current.add(dr1.getX());
-		current.add(dr1.getY());
-		current.add(dr1.getWidth());
-		current.add(dr1.getHeight());
+		// User has pressed the mouse.  Find the shape that the user has clicked on, if
+        // any.  If there is a shape at the position when the mouse was clicked, then
+        // start dragging it.  If the user was holding down the shift key, then bring
+        // the dragged shape to the front, in front of all the other shapes.
 		
-		    if (dr1.getX() < e.getX() && dr1.getY() < e.getY() &&
-		    		dr1.getX() + dr1.getWidth() > e.getX()  &&
-		    		dr1.getY() + dr1.getHeight() > e.getY()){
-		    	System.out.println("Clicked");
-		    	for(Integer s: rect){
-		    	if(current.contains(s)){
-		    		/*g.setColor(Color.RED);
-		    		g.fillRect(dr1.getX(), dr1.getY(), dr1.getWidth(), dr1.getHeight());
-                    repaint();*/
-		    		//g.fillRect(dr1.getX(), dr1.getY(), dr1.getWidth(), dr1.getHeight());
-                    // repaint();
-	                System.out.println("Clicked a Rectangle");
-		    	}
-		    	}
-		    	for(Integer s: cir){
-		    	if(current.contains(s)){
-		    		
-		    		currentColor = Color.RED;
-		    		
-		    		/*dr1 = new Circle(currentColor);
-	                dr1.shapes(getGraphics());
-		    		System.out.println("Clicked a Circle");*/
-		    	}
-		    	}repaint(dr1.getX(),dr1.getY(),dr1.getWidth(),dr1.getHeight());
-	        }
-		    else {
-		        System.out.println("Clicked Nothing");
-		       }
-		  }
-	
-	
-
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		 if (dr1.getX() < e.getX() && dr1.getY() < e.getY() &&
-		    		dr1.getX() + dr1.getWidth() > e.getX()  &&
-		    		dr1.getY() + dr1.getHeight() > e.getY())
-			 {System.out.println("Clicked"); 
-			 updateLocation(e);}
-		    else {
-		    	System.out.println("Drag it.");
-		      pressOut = false;
-		    }System.out.println("Clicked");
-	}
-
-	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		if (!pressOut){
-		      updateLocation(e);
-		      System.out.println("Clicked");
-		}
-		    else
-		     System.out.println("Drag it.");
-		//System.out.println("Clicked");
-	}
-
-	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void colorActionPerformed(ActionEvent event)
-	{
-		Color selection = JColorChooser.showDialog(null, "Choose a color" , 
-				Color.BLACK);
-		if (selection != null)
-		{
-			clr.setForeground(selection);
-			setCurrentColor(selection);
-		}
-	}
-	
-	public void setCurrentColor(Color shapeColor)
-	{
-		currentColor = shapeColor;
-		
-	}
-/*	public void paintComponent(Graphics g) {
-		
-        int width = dr1.getWidth();
-        int height = dr1.getHeight();
-        int x = dr1.getX();
-        int y = dr1.getY();
-        g.setColor(currentColor);
-        g.drawRect(x,y,width,height);
+			
+		int x = e.getX();  // x-coordinate of point where mouse was clicked
+		int y = e.getY();  // y-coordinate of point 
+		int top = shp.size();
+	     for (int i = 0; i < top; i++) {
+	     Shape s = (Shape)shp.get(i);
+	     if (s.containsPoint(x,y)) {
+	    	 s.setColor(Color.RED);
+	     }
+	     else
+	    	 s.setColor(currentColor);
+         }
        
-    }*/
-	 public void paint(Graphics g) {
-		    update(g);
-		  }
+       repaint();
+		
+		for ( int i = shp.size() - 1; i >= 0; i-- ) {  // check shapes from front to back
+			Shape s = (Shape)shp.get(i);
+			if (s.containsPoint(x,y)) {
+				shapeBeingDragged = s;
+				prevDragX = x;
+				prevDragY = y;
+				if (e.isShiftDown()) {  // Bring the shape to the front by moving it to
+					shp.remove(s);      //       the end of the list of shapes.
+					shp.add(s);
+					repaint();  // repaint canvas to show shape in front of other shapes
+				}
+				return;
+			}
+		}
+	}
+	
+	
 
-	 public void update(Graphics g) {
-		    Graphics2D g2 = (Graphics2D) g;
-		    Dimension dim = getSize();
-		    int w = (int) dr1.getWidth();
-		    int h = (int) dr1.getHeight();
-		    //g2.setStroke(new BasicStroke(8.0f));
+	public void mouseEntered(MouseEvent arg0) {	}
 
-		    if (isFirstTime) {
-		      area = new Rectangle(dim);
-		      rect1.setLocation(dr1.getX(),dr1.getY());
-		      isFirstTime = false;
-		    }
+	public void mouseExited(MouseEvent arg0) {	}
 
-		    // Clears the rectangle that was previously drawn.
-		    g2.setPaint(Color.white);
-		    g2.fillRect(0, 0, w, h);
+	public void mouseMoved(MouseEvent arg0) {	}
+	
+	public void mouseReleased(MouseEvent e) {
+		  // User has released the mouse.  Move the dragged shape, then set
+        // shapeBeingDragged to null to indicate that dragging is over.
+        // If the shape lies completely outside the canvas, remove it
+        // from the list of shapes (since there is no way to ever move
+        // it back onscreen).
 
-		    g2.setColor(Color.red);
-		    g2.draw(rect1);
-		    g2.setColor(Color.black);
-		    g2.fill(rect1);
-		  }
+		int x = e.getX();  // x-coordinate of point where mouse was clicked
+		int y = e.getY();  // y-coordinate of point 
+		int top = shp.size();
+	     for (int i = 0; i < top; i++) {
+	     Shape s = (Shape)shp.get(i);
+	     if (s.containsPoint(x,y)) {
+	    	 s.setColor(Color.BLACK);
+	     }
+	     }
+	     if (shapeBeingDragged != null) {
+	    	 shapeBeingDragged.moveBy(x - prevDragX, y - prevDragY);
+	    	 if ( shapeBeingDragged.left >= getSize().width || shapeBeingDragged.top >= getSize().height ||
+               shapeBeingDragged.left + shapeBeingDragged.width < 0 ||
+               shapeBeingDragged.top + shapeBeingDragged.height < 0 ) {  // shape is off-screen
+	    		 shp.remove(shapeBeingDragged);  // remove shape from list of shapes
+	    	 }
+	    	 shapeBeingDragged = null;
+	    	 repaint();
+	     }
+ }
+	public void mouseDragged(MouseEvent e) {
+		 // User has moved the mouse.  Move the dragged shape by the same amount.
+        int x = e.getX();
+        int y = e.getY();
+        if (shapeBeingDragged != null) {
+           shapeBeingDragged.moveBy(x - prevDragX, y - prevDragY);
+           prevDragX = x;
+           prevDragY = y;
+           repaint();      // redraw canvas to show shape in new position
+        }
+     }
+	
 
-		  boolean checkRect() {
-		    if (area == null) {
-		      return false;
-		    }
+	
+		
+	public void paintComponent(Graphics g) {
+        // In the paint method, all the shapes in ArrayList are
+        // copied onto the canvas.
+      g.setColor(getBackground());
+      g.fillRect(0,0,getSize().width,getSize().height);
+      int top = shp.size();
+      for (int i = 0; i < top; i++) {
+    	 Shape s = (Shape)shp.get(i);
+         s.draw(g);
+      }
+   } 
 
-		    if (area.contains(rect1.x, rect1.y, 100, 50)) {
-		      return true;
-		    }
-		    int new_x = rect1.x;
-		    int new_y = rect1.y;
-
-		    if ((rect1.x + 100) > area.getWidth()) {
-		      new_x = (int) area.getWidth() - 99;
-		    }
-		    if (rect1.x < 0) {
-		      new_x = -1;
-		    }
-		    if ((rect1.y + 50) > area.getHeight()) {
-		      new_y = (int) area.getHeight() - 49;
-		    }
-		    if (rect1.y < 0) {
-		      new_y = -1;
-		    }
-		    rect1.setLocation(new_x, new_y);
-		    return false;
-		  }
-		  public void updateLocation(MouseEvent e) {
-			    rect1.setLocation(preX + e.getX(), preY + e.getY());
-
-			    if (checkRect()) {
-			    	System.out.println(rect1.getX() + ", " + rect1.getY());
-			    } else {
-			    	System.out.println("drag inside the area.");
-			    }
-
-			    repaint();
-			  }
+	 public void colorActionPerformed(ActionEvent event)
+		{
+			Color selection = JColorChooser.showDialog(null, "Choose a color" , 
+					Color.BLACK);
+			if (selection != null)
+			{
+				//clr.setForeground(selection);
+				setCurrentColor(selection);
+			}
+			else
+				setCurrentColor(Color.BLACK);
+		}
+		
+		public void setCurrentColor(Color shapeColor)
+		{
+			currentColor = shapeColor;
+			
+		}
 }
 
+	
