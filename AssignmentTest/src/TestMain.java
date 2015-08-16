@@ -24,11 +24,10 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
       addMouseMotionListener(this);
    }  
 	Color currentColor = Color.black;
-	//private Graphics g;
-	public draw dr1;
-	
+	Color prevColor = Color.black;
+	int currentX, currentY;
 	ArrayList shp = new ArrayList(); 
-	  
+	 
 	
 	//function of button listener and what action its take 
 		public void actionPerformed(ActionEvent e) {
@@ -54,19 +53,32 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 		        else if(draw.getSelectedItem() == "Square")
 		        	addShape(new Square());
 			}
-			else if (command.equals("Delete"))
-				repaint();
-			else if(command.equals("Align"))
-				System.out.println("Nothing");
+			else if (command.equals("Delete")){
+				for ( int i = shp.size() - 1; i >= 0; i-- ) {  // check shapes from front to back
+					Shape s = (Shape)shp.get(i);
+					if (s.containsPoint(currentX,currentY)) {
+							shp.remove(s);
+							repaint();  // repaint canvas to show shape in front of other shapes
+						}
+						
+					}
+			}
+			else if(command.equals("Align")){
+				setHorizontalAlignment(0, 0);
+			}
 			else if(command.equals("Set Color")){
 				colorActionPerformed(e);
-			}
-							
-			}
+				for ( int i = shp.size() - 1; i >= 0; i-- ) {  // check shapes from front to back
+					Shape s = (Shape)shp.get(i);
+					if (s.containsPoint(currentX,currentY)) {
+						s.setColor(currentColor);
+						repaint();  // repaint canvas to show shape in front of other shapes
+						
+					}	
+				}
+			}	
+		}
 		
-		
-		
-	
 	void addShape(Shape shape) {
         // Add the shape to the canvas, and set its size/position and color.
         // The shape is added at the top-left corner, with size 80-by-50.
@@ -144,32 +156,23 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 			
 		int x = e.getX();  // x-coordinate of point where mouse was clicked
 		int y = e.getY();  // y-coordinate of point 
+		currentX = e.getX();  
+		currentY = e.getY();
 		int top = shp.size();
 	     for (int i = 0; i < top; i++) {
 	     Shape s = (Shape)shp.get(i);
-	     if (s.containsPoint(x,y)) {
+	     if (s.containsPoint(currentX,currentY)) {
+	    	 //prevColor = s.getColor();
 	    	 s.setColor(Color.RED);
 	     }
-	     else
-	    	 s.setColor(currentColor);
+	     else{
+	    	 prevColor = s.getColor();
+	    	 s.setColor(prevColor);
+	    	 }
          }
        
        repaint();
-		
-		for ( int i = shp.size() - 1; i >= 0; i-- ) {  // check shapes from front to back
-			Shape s = (Shape)shp.get(i);
-			if (s.containsPoint(x,y)) {
-				shapeBeingDragged = s;
-				prevDragX = x;
-				prevDragY = y;
-				if (e.isShiftDown()) {  // Bring the shape to the front by moving it to
-					shp.remove(s);      //       the end of the list of shapes.
-					shp.add(s);
-					repaint();  // repaint canvas to show shape in front of other shapes
-				}
-				return;
-			}
-		}
+
 	}
 	
 	
@@ -193,7 +196,7 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 	     for (int i = 0; i < top; i++) {
 	     Shape s = (Shape)shp.get(i);
 	     if (s.containsPoint(x,y)) {
-	    	 s.setColor(Color.BLACK);
+	    	 s.setColor(currentColor);
 	     }
 	     }
 	     if (shapeBeingDragged != null) {
@@ -251,6 +254,17 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 		{
 			currentColor = shapeColor;
 			
+		}
+		public void setHorizontalAlignment(int x, int y){
+			int top = shp.size();
+			for (int i = 0; i < top; i++) {
+		    	 Shape s = (Shape)shp.get(i);
+		         s.reshape(x,y,100,50);
+		         x += 200;
+		         y += 100;
+		         
+		      }
+			repaint();
 		}
 }
 
