@@ -9,6 +9,7 @@ import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent; 
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -26,8 +27,8 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 	Color currentColor = Color.black;
 	Color prevColor = Color.black;
 	int currentX, currentY;
-	ArrayList shp = new ArrayList(); 
-	 
+	ArrayList shp = new ArrayList();
+	ArrayList multiShape = new ArrayList();
 	
 	//function of button listener and what action its take 
 		public void actionPerformed(ActionEvent e) {
@@ -54,14 +55,23 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 		        	addShape(new Square());
 			}
 			else if (command.equals("Delete")){
+				if (multiShape.size()>1) {
+					for (int i = multiShape.size() - 1; i >= 0; i--) {
+				    Shape s = (Shape)multiShape.get(i);
+				    multiShape.remove(s);
+				    shp.remove(s);
+						
+				    }repaint();
+				 }
+				else{
 				for ( int i = shp.size() - 1; i >= 0; i-- ) {  // check shapes from front to back
 					Shape s = (Shape)shp.get(i);
 					if (s.containsPoint(currentX,currentY)) {
 							shp.remove(s);
 							repaint();  // repaint canvas to show shape in front of other shapes
-						}
-						
 					}
+				}
+				}
 			}
 			else if(command.equals("Align")){
 				setHorizontalAlignment(0, 0);
@@ -96,7 +106,9 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 	    // so add 1 to make it inclusive
 		int x = rd.nextInt((maxX - minX) + 1) + minX;
 		int y = rd.nextInt((maxY - minY) + 1) + minY;
+		
 		shape.setColor(currentColor);
+		
 		shape.reshape(x,y,100,50);
 		shp.add(shape);
 		repaint();
@@ -104,14 +116,17 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 	
 	//function of button listener and what action its take
 	 
-	
-	 Shape shapeBeingDragged = null;  // This is null unless a shape is being dragged.
+	 // This is null unless a shape is being dragged.
      // A non-null value is used as a signal that dragging
      // is in progress, as well as indicating which shape
      // is being dragged.
-
-	 int prevDragX;  // During dragging, these record the x and y coordinates of the
-	 int prevDragY;  //    previous position of the mouse.
+	 Shape shapeBeingDragged = null;  
+	 // During dragging, these record the x and y coordinates of the
+	 //previous position of the mouse.
+	 int prevDragX1;  
+	 int prevDragY1;  
+	 int prevDragX2;
+	 int prevDragY2;
 
 	public void mousePressed(MouseEvent e) {
 		int x = e.getX();  // x-coordinate of point where mouse was clicked
@@ -134,11 +149,16 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
         Shape s = (Shape)shp.get(i);
         if (s.containsPoint(x,y)) {
            shapeBeingDragged = s;
-           prevDragX = x;
-           prevDragY = y;
+           prevDragX1 = x;
+           prevDragY1 = y;
+           prevDragX2 = currentX;
+           prevDragY2 = currentX;
+           
            if (e.isShiftDown()) {  // Bring the shape to the front by moving it to
               shp.remove(s);      //       the end of the list of shapes.
               shp.add(s);
+              multiShape.remove(s);
+              multiShape.add(s);
               repaint();  // repaint canvas to show shape in front of other shapes
            }
            return;
@@ -158,21 +178,35 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 		int y = e.getY();  // y-coordinate of point 
 		currentX = e.getX();  
 		currentY = e.getY();
+		if (e.isShiftDown()) {
+			int top = shp.size();
+		     for (int i = 0; i < top; i++) {
+		     Shape s = (Shape)shp.get(i);
+		     if (s.containsPoint(currentX,currentY)) {
+		    	 s.setColor(Color.RED);
+		    	 multiShape.add(s);
+		     }
+		     
+	         }
+	       
+	       repaint();
+		}
+		else{
 		int top = shp.size();
 	     for (int i = 0; i < top; i++) {
 	     Shape s = (Shape)shp.get(i);
 	     if (s.containsPoint(currentX,currentY)) {
-	    	 //prevColor = s.getColor();
 	    	 s.setColor(Color.RED);
 	     }
 	     else{
 	    	 prevColor = s.getColor();
-	    	 s.setColor(prevColor);
+	    	 s.setColor(currentColor);
 	    	 }
          }
        
        repaint();
 
+	}
 	}
 	
 	
@@ -192,36 +226,88 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 
 		int x = e.getX();  // x-coordinate of point where mouse was clicked
 		int y = e.getY();  // y-coordinate of point 
-		int top = shp.size();
-	     for (int i = 0; i < top; i++) {
-	     Shape s = (Shape)shp.get(i);
-	     if (s.containsPoint(x,y)) {
-	    	 s.setColor(currentColor);
-	     }
-	     }
-	     if (shapeBeingDragged != null) {
-	    	 shapeBeingDragged.moveBy(x - prevDragX, y - prevDragY);
-	    	 if ( shapeBeingDragged.left >= getSize().width || shapeBeingDragged.top >= getSize().height ||
-               shapeBeingDragged.left + shapeBeingDragged.width < 0 ||
-               shapeBeingDragged.top + shapeBeingDragged.height < 0 ) {  // shape is off-screen
-	    		 shp.remove(shapeBeingDragged);  // remove shape from list of shapes
-	    	 }
-	    	 shapeBeingDragged = null;
-	    	 repaint();
-	     }
- }
+		
+		if (e.isShiftDown()) {
+			int top = multiShape.size();
+			for (int i = 0; i < top; i++) {
+			     Shape s = (Shape)multiShape.get(i);
+			     if (s.containsPoint(x,y)) {
+			    	 s.setColor(currentColor);
+			     }
+			     }
+			     for (int i = 0; i < top; i++) {
+				     Shape s = (Shape)multiShape.get(i);
+				     
+			     if (shapeBeingDragged != null) {
+			    	 shapeBeingDragged.moveBy(x - prevDragX1, y - prevDragY1);
+			    	 //shapeBeingDragged.moveBy(currentX - prevDragX2, currentY - prevDragY2);
+			    	 if ( shapeBeingDragged.left >= getSize().width || shapeBeingDragged.top >= getSize().height ||
+		               shapeBeingDragged.left + shapeBeingDragged.width < 0 ||
+		               shapeBeingDragged.top + shapeBeingDragged.height < 0 ) {// shape is off-screen
+			    		 multiShape.remove(shapeBeingDragged);  // remove shape from list of shapes
+			    	 }
+			    	 shapeBeingDragged = null;
+			    	 repaint();
+			     }
+			     }
+		}
+		else{
+			int top = shp.size();
+			for (int i = 0; i < top; i++) {
+				Shape s = (Shape)shp.get(i);
+				if (s.containsPoint(x,y)) {
+					s.setColor(currentColor);
+				}
+			}
+			for (int i = 0; i < top; i++) {
+				Shape s = (Shape)shp.get(i);
+				
+				if (shapeBeingDragged != null) {
+					shapeBeingDragged.moveBy(x - prevDragX1, y - prevDragY1);
+					if ( shapeBeingDragged.left >= getSize().width || shapeBeingDragged.top >= getSize().height ||
+							shapeBeingDragged.left + shapeBeingDragged.width < 0 ||
+							shapeBeingDragged.top + shapeBeingDragged.height < 0 ) {  // shape is off-screen
+						shp.remove(shapeBeingDragged);  // remove shape from list of shapes
+					}
+					shapeBeingDragged = null;
+					repaint();
+				}
+			}
+			}
+	}
 	public void mouseDragged(MouseEvent e) {
 		 // User has moved the mouse.  Move the dragged shape by the same amount.
         int x = e.getX();
         int y = e.getY();
-        if (shapeBeingDragged != null) {
-           shapeBeingDragged.moveBy(x - prevDragX, y - prevDragY);
-           prevDragX = x;
-           prevDragY = y;
-           repaint();      // redraw canvas to show shape in new position
+        if (e.isShiftDown()) {
+        	int top = multiShape.size();
+        	for (int i = 0; i < top; i++) {
+        		Shape s = (Shape)multiShape.get(i);
+        		if (shapeBeingDragged != null) {
+        			shapeBeingDragged.moveBy(x - prevDragX1, y - prevDragY1);
+        			//shapeBeingDragged.moveBy(currentX - prevDragX2, currentY - prevDragY2);
+        			prevDragX1 = x;
+        			prevDragY1 = y;
+        			//prevDragX2 = x;
+        			//prevDragY2 = y;
+        			repaint();      // redraw canvas to show shape in new position
+        			         
+        		}
+        	}
         }
-     }
-	
+        else{
+        	int top = shp.size();
+        	for (int i = 0; i < top; i++) {
+        		Shape s = (Shape)shp.get(i);
+        		if (shapeBeingDragged != null) {
+        			shapeBeingDragged.moveBy(x - prevDragX1, y - prevDragY1);
+        			prevDragX1 = x;
+        			prevDragY1 = y;
+        			repaint();      // redraw canvas to show shape in new position
+        		}
+        	}
+        }
+	}
 
 	
 		
