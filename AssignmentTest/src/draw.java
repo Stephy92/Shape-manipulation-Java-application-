@@ -118,6 +118,7 @@
 			p1.add(delete);
 			p1.add(align);
 			p1.add(clr);
+			
 	
 			add.addActionListener(tM);
 			delete.addActionListener(tM);
@@ -130,6 +131,7 @@
 			getContentPane().setLayout(new BorderLayout(1,3));
 			getContentPane().add("North", p1);
 			getContentPane().add("Center",tM);
+			//getContentPane().add("North",tM);
 			
 			//set frame settings
 			setBackground(Color.white);
@@ -139,7 +141,7 @@
 		    this.setLocationRelativeTo(null);
 		    this.setVisible(true);
 		    this.setResizable(false);
-		    
+		    this.setJMenuBar(jmb);
 		
 	   
 		}
