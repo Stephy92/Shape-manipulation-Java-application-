@@ -1,19 +1,16 @@
 import javax.swing.*;
 
-import java.awt.BasicStroke;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.ActionEvent; 
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 public class TestMain extends JPanel implements MouseMotionListener, MouseListener, ActionListener{ 
@@ -27,8 +24,9 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 	Color currentColor = Color.black;
 	Color prevColor = Color.black;
 	int currentX, currentY;
-	ArrayList shp = new ArrayList();
+	ArrayList<Shape> shp = new ArrayList();
 	ArrayList multiShape = new ArrayList();
+	ArrayList<Point> coordinate = new ArrayList();
 	
 	//function of button listener and what action its take 
 		public void actionPerformed(ActionEvent e) {
@@ -74,8 +72,28 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 				}
 			}
 			else if(command.equals("Align")){
-				setHorizontalAlignment(0, 0);
-			}
+				/*//Collections.sort(shp);
+				//int tempX = 0;
+				for ( Shape s: shp) {  // check shapes from front to back
+					//Shape s = (Shape)shp.get(i);
+					s.reshape(s.getX(), s.getY(), s.getWidth(), s.getHeight());
+					//tempX += 200;
+				}
+				repaint();*/
+				
+				Collections.sort( coordinate, new Comparator<Point>() {
+				       public int compare(Point x1, Point x2) {
+				         int result = Double.compare(x1.getX(), x2.getX());
+				         if ( result == 0 ) {
+				           // both X are equal -> compare Y too
+				           result = Double.compare(x1.getY(), x2.getY());
+				         } 
+				         return result;
+				      }
+				    });
+				
+				}
+			
 			else if(command.equals("Set Color")){
 				colorActionPerformed(e);
 				for ( int i = shp.size() - 1; i >= 0; i-- ) {  // check shapes from front to back
@@ -106,12 +124,15 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 	    // so add 1 to make it inclusive
 		int x = rd.nextInt((maxX - minX) + 1) + minX;
 		int y = rd.nextInt((maxY - minY) + 1) + minY;
-		
+		Point pnt = new Point(x,y);
 		shape.setColor(currentColor);
 		
 		shape.reshape(x,y,100,50);
 		shp.add(shape);
 		repaint();
+		
+		coordinate.add(pnt);
+		
 	}
 	
 	//function of button listener and what action its take
@@ -341,17 +362,20 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 			currentColor = shapeColor;
 			
 		}
-		public void setHorizontalAlignment(int x, int y){
-			int top = shp.size();
-			for (int i = 0; i < top; i++) {
-		    	 Shape s = (Shape)shp.get(i);
-		         s.reshape(x,y,100,50);
-		         x += 200;
-		         y += 100;
-		         
+		public <shp> int compareTo(ArrayList o){
+			int rt = 0;
+			shp s = (shp)o;
+		    int tempX = this.getX();
+		    int theX = (int) ((Point) s).getX();
+		    if (tempX < theX)
+		    	rt = -1;
+		    if (tempX > theX)
+		    	rt = 1;
+		    
+		    return rt;
+			
 		      }
-			repaint();
-		}
+			
 }
 
 	
