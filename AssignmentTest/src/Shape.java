@@ -35,13 +35,13 @@ public abstract class Shape extends JPanel{
 		return color;
 	}
 
-    boolean containsPoint(int x, int y) {
+    boolean containsPoint(double d, double e) {
           // Check whether the shape contains the point (x,y).
           // By default, this just checks whether (x,y) is inside the
           // rectangle that bounds the shape.  This method should be
           // overridden by a subclass if the default behavior is not
           // appropriate for the subclass.
-       if (x >= left && x < left+width && y >= top && y < top+height)
+       if (d >= left && d < left+width && e >= top && e < top+height)
           return true;
        else
           return false;

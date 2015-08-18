@@ -24,9 +24,10 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 	Color currentColor = Color.black;
 	Color prevColor = Color.black;
 	int currentX, currentY;
-	ArrayList<Shape> shp = new ArrayList();
+	ArrayList shp = new ArrayList();
 	ArrayList multiShape = new ArrayList();
 	ArrayList<Point> coordinate = new ArrayList();
+	ArrayList newShp = new ArrayList();
 	
 	//function of button listener and what action its take 
 		public void actionPerformed(ActionEvent e) {
@@ -72,27 +73,31 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 				}
 			}
 			else if(command.equals("Align")){
-				/*//Collections.sort(shp);
-				//int tempX = 0;
-				for ( Shape s: shp) {  // check shapes from front to back
-					//Shape s = (Shape)shp.get(i);
-					s.reshape(s.getX(), s.getY(), s.getWidth(), s.getHeight());
-					//tempX += 200;
-				}
-				repaint();*/
+				System.out.println("Click Align");
+				Collections.sort(coordinate, new PointCompare());
+				System.out.println("Sort");
+				for(int j=0; j<coordinate.size();j++){
+					for(int i=0; i<shp.size();i++){
 				
-				Collections.sort( coordinate, new Comparator<Point>() {
-				       public int compare(Point x1, Point x2) {
-				         int result = Double.compare(x1.getX(), x2.getX());
-				         if ( result == 0 ) {
-				           // both X are equal -> compare Y too
-				           result = Double.compare(x1.getY(), x2.getY());
-				         } 
-				         return result;
-				      }
-				    });
-				
+						Shape s = (Shape)shp.get(i);
+						Point p = (Point)coordinate.get(j);
+						if(s.containsPoint(p.getX(), p.getY())){
+							System.out.println("save new shape");
+							newShp.add(s);
+							System.out.println(p.getX() + p.getY());
+						}
+						else	
+							System.out.println("Wrong Align");
+					}
 				}
+				repaint();
+				int top = coordinate.size();
+				for (int i = 0; i < top; i++) {
+					Point s = (Point)coordinate.get(i);
+					setHorizontalAlignment(0, s.getY(), getGraphics());
+				}
+				
+			}
 			
 			else if(command.equals("Set Color")){
 				colorActionPerformed(e);
@@ -107,6 +112,12 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 			}	
 		}
 		
+	private void setHorizontalAlignment(double x, double y,
+				Graphics graphics) {
+			// TODO Auto-generated method stub
+			
+		}
+
 	void addShape(Shape shape) {
         // Add the shape to the canvas, and set its size/position and color.
         // The shape is added at the top-left corner, with size 80-by-50.
@@ -124,15 +135,15 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 	    // so add 1 to make it inclusive
 		int x = rd.nextInt((maxX - minX) + 1) + minX;
 		int y = rd.nextInt((maxY - minY) + 1) + minY;
-		Point pnt = new Point(x,y);
+		Point pnt = new Point(0,0);
 		shape.setColor(currentColor);
-		
 		shape.reshape(x,y,100,50);
 		shp.add(shape);
+		
+		pnt.setLocation(x, y);
+		coordinate.add(pnt.getLocation()); // put in
 		repaint();
-		
-		coordinate.add(pnt);
-		
+		//coordinate.add(y);
 	}
 	
 	//function of button listener and what action its take
@@ -362,20 +373,35 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 			currentColor = shapeColor;
 			
 		}
-		public <shp> int compareTo(ArrayList o){
-			int rt = 0;
-			shp s = (shp)o;
-		    int tempX = this.getX();
-		    int theX = (int) ((Point) s).getX();
-		    if (tempX < theX)
-		    	rt = -1;
-		    if (tempX > theX)
-		    	rt = 1;
-		    
-		    return rt;
-			
-		      }
-			
+		public void setHorizontalAlignment(int x, int y,Graphics g){
+			int top = newShp.size();
+			for (int i = 0; i < top; i++) {
+				Shape s = (Shape)newShp.get(i);
+				Point p = (Point)coordinate.get(i);
+				s.reshape(x,(int) p.getY(),100,50);
+				//y = s.getY();
+				s.draw(g);
+				x += 100;
+			}
+		}
+		      
+		public class PointCompare
+        implements Comparator<Point> {
+
+        public int compare(final Point a, final Point b) {
+            if (a.y < b.y) {
+                return -1;
+            }
+            else if (a.y > b.y) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+    }
+
+		
 }
 
 	
