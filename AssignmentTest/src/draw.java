@@ -1,15 +1,10 @@
 	import java.awt.BorderLayout;
 	import java.awt.Color;
 	import java.awt.Dimension;
-	import java.awt.GridLayout;
-	import java.awt.event.ActionEvent;
-	import java.awt.event.ActionListener;
-	
 	import javax.swing.AbstractButton;
 	import javax.swing.BorderFactory;
 	import javax.swing.ImageIcon;
 	import javax.swing.JButton;
-	import javax.swing.JColorChooser;
 	import javax.swing.JComboBox;
 	import javax.swing.JFrame;
 	import javax.swing.JMenu;
@@ -20,50 +15,50 @@
 	
 	
 	public class draw extends JFrame{
+		
+		// Button Icon & Button declaration
 		private ImageIcon addImg = new ImageIcon ("add.png");
 		private ImageIcon delImg = new ImageIcon ("del.png");
 		private ImageIcon aliImg = new ImageIcon ("align.png");
 		private ImageIcon colorPic = new ImageIcon ("color.png");
-		
-		static String[] shapes = {"Rectangle", "Oval", "Circle", "Triangle","Round Rectangle","Square"};
+		JButton add = new JButton("Add");
+		JButton delete = new JButton("Delete");
+		JButton align = new JButton("Align");
+		JButton clr = new JButton("Set Color");
+			
+		// ComboBox selection items
+		static String[] shapes = {"Rectangle", "Oval", "Circle","Round Rectangle","Square"};
 		static JComboBox ShapeTitle = new JComboBox(shapes);
+		
+		//Constructor : set the interface gui design
 		public draw (){
-			JPanel p1 = new JPanel();
-			JButton add = new JButton("Add");
-			JButton delete = new JButton("Delete");
-			JButton align = new JButton("Align");
-			JButton clr = new JButton("Set Color");
 			
-			//Add buttons into panel
+			// Call the TestMain class function to work in this interface 					
+			TestMain tM = new TestMain();	  
 			
-					//add button listener and action for add, delete, and also align button
-					//add button listener and action for color button
-					
-			TestMain tM = new TestMain();	   
-			// Size for Combo Box
-						
+			// Size for Combo Box	
 			ShapeTitle.setPreferredSize(new Dimension(200, 30));
 						
 			
-			//add Button Image
+			//set Add button Image's position
 			add.setIcon(addImg);
 			add.setHorizontalTextPosition(AbstractButton.RIGHT);
 			add.setVerticalTextPosition(AbstractButton.BOTTOM);
 				        
 				       
-			//del Button Image
+			//set Delete button's image position
 			delete.setIcon(delImg);
 			delete.setHorizontalTextPosition(AbstractButton.RIGHT);
 			delete.setVerticalTextPosition(AbstractButton.BOTTOM);
 				        
 				        
-			//align button image
+			//set Align button's image position
 			align.setIcon(aliImg);
 			align.setHorizontalTextPosition(AbstractButton.RIGHT);
 			align.setVerticalTextPosition(AbstractButton.BOTTOM);
 				        
 				        
-			//align color image
+			//Set Color button's image position
 			clr.setIcon(colorPic);
 			clr.setHorizontalTextPosition(AbstractButton.RIGHT);
 			clr.setVerticalTextPosition(AbstractButton.BOTTOM);
@@ -73,12 +68,10 @@
 			JMenuBar jmb = new JMenuBar();
 			// Menu bar for option
 			JMenu jmOption = new JMenu("Option");
-			JMenuItem jmAddDraw = new JMenuItem("Add Draw");
-			JMenuItem jmAddFill = new JMenuItem("Add Fill");
+			JMenuItem jmAddDraw = new JMenuItem("Add");
 			JMenuItem jmDel = new JMenuItem("Delete");
 			JMenuItem jmAlign = new JMenuItem("Align");
 			jmOption.add(jmAddDraw);
-			jmOption.add(jmAddFill);
 			jmOption.add(jmDel);
 			jmOption.add(jmAlign);
 			jmOption.addSeparator();
@@ -86,8 +79,8 @@
 			
 			//Menu bar for color
 			JMenu jmColor = new JMenu ("Choose Color");
-			JMenuItem jmCol = new JMenuItem ("Color");
-			jmColor.add(jmCol);
+			//JMenuItem jmCol = new JMenuItem ("Color");
+			//jmColor.add(jmCol);
 			jmb.add(jmColor);
 							
 			//Menu Bar for Shape
@@ -95,20 +88,17 @@
 			JMenuItem jmRect = new JMenuItem ("Rectangle");
 			JMenuItem jmCic = new JMenuItem ("Circle");
 			JMenuItem jmSquare = new JMenuItem ("Square");
-			JMenuItem jmTri = new JMenuItem ("Triangle");
+			JMenuItem jmRR = new JMenuItem ("Round Rectangle");
 			JMenuItem jmOval = new JMenuItem ("Oval");
 			jmShape.add(jmRect);
 			jmShape.add(jmCic);
 			jmShape.add(jmSquare);
-			jmShape.add(jmTri);
+			jmShape.add(jmRR);
 			jmShape.add(jmOval);
 			jmb.add(jmShape);
 					
-	
-			
-			
-			ShapeTitle.addActionListener(tM);
-			
+			// add new panel & put in all the button inside the panel
+			JPanel p1 = new JPanel();
 			String name =("Select an Option");
 			p1.setPreferredSize(new Dimension(100, 80));
 			p1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createMatteBorder(3,3,
@@ -119,19 +109,20 @@
 			p1.add(align);
 			p1.add(clr);
 			
-	
+			// Calling the event function of TestMain
+			ShapeTitle.addActionListener(tM);
 			add.addActionListener(tM);
 			delete.addActionListener(tM);
 			align.addActionListener(tM);
 			clr.addActionListener(tM);
-			
-			
+			jmAddDraw.addActionListener(tM);	
+			jmDel.addActionListener(tM);
+			jmColor.addActionListener(tM);
 			
 			//add panel into container
 			getContentPane().setLayout(new BorderLayout(1,3));
 			getContentPane().add("North", p1);
 			getContentPane().add("Center",tM);
-			//getContentPane().add("North",tM);
 			
 			//set frame settings
 			setBackground(Color.white);
@@ -140,14 +131,16 @@
 		    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		    this.setLocationRelativeTo(null);
 		    this.setVisible(true);
-		    this.setResizable(false);
+		    this.setResizable(false);  
 		    this.setJMenuBar(jmb);
-		
-	   
 		}
+		
+		// main function of the project
 		public static void main(String[] args){
 			new draw();
 		}
+		
+		// for select the combo items
 		public static String getSelectedItem() {
 			// TODO Auto-generated method stub
 			return (String) ShapeTitle.getSelectedItem();

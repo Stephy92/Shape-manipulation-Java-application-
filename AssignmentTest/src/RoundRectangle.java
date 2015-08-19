@@ -4,10 +4,11 @@ import java.util.Random;
 
 public class RoundRectangle extends Shape {
 
+	//this class represent a round rectangle
 	public void draw(Graphics g) {
-        /*g.setColor(color);
-        g.fillRect(left,top,width,height);*/
+		//get the color of round rectangle
         g.setColor(getColor());
-        g.drawRoundRect(left, top, width, height, 10, 10);
+        //draw a round rectangle
+        g.drawRoundRect(left, top, width, height, 30, 30);
     }
 }
