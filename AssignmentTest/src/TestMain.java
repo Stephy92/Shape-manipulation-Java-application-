@@ -1,5 +1,4 @@
 import javax.swing.*;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -20,41 +19,60 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
       setBackground(Color.white);
       addMouseListener(this);
       addMouseMotionListener(this);
-   }  
+   } 
+	
+	//set the default shape color as black
 	Color currentColor = Color.black;
+	//declaration for get back the current color
 	Color prevColor = Color.black;
+	//temporary variable to store point x and point y 
 	int currentX, currentY;
+	
+	// holds a list of the shapes that are displayed on the Frame	
 	ArrayList shp = new ArrayList();
+	
+	// holds a list of the shapes that have been selected on the Frame
 	ArrayList multiShape = new ArrayList();
+	
+	// holds a list of the coordinate of shapes that have been selected on the Frame
 	ArrayList<Point> coordinate = new ArrayList();
+	
+	// holds a list of the shapes that have been sort
 	ArrayList newShp = new ArrayList();
 	
 	//function of button listener and what action its take 
 		public void actionPerformed(ActionEvent e) {
-			//if (e.getSource() instanceof JButton) {
+			// Called to respond to action events.  
+            // There have four buttons which is add button, delete button, align button and set color button 
+			// have been set up to send action events to this TestMain.
+            // Respond by respond the appropriate shape to the TestMain.
 			String command = e.getActionCommand();
-			//String b2 = (String) ((JComboBox)e.getSource()).getSelectedItem();
 			
 			//when click add button
 			if(command.equals("Add"))
 			{
 				
-				//will come out rectangle shape when choose Rectangle from combobox
+				//decided by combo box which type of shape had been select and which should
+				//display in the interface
 				if (draw.getSelectedItem() == "Rectangle")
+					//draw Rectangle when combo box choose "Rectangle"
 					addShape(new Rectangle());
 		        else if (draw.getSelectedItem() == "Oval")
+		        	//draw Oval when combo box choose "Oval"
 		        	addShape(new Oval());
 		        else if (draw.getSelectedItem() == "Circle")
+		        	//draw Circle when combo box choose "Circle"
 		        	addShape(new Circle());
-		        else if(draw.getSelectedItem() == "Triangle")
-		        	addShape(new Triangle());
 		        else if(draw.getSelectedItem() == "Round Rectangle")
+		        	//draw Round Rectangle when combo box choose "Round Rectangle"
 		        	addShape(new RoundRectangle());
 		        else if(draw.getSelectedItem() == "Square")
+		        	//draw Square when combo box choose "Square"
 		        	addShape(new Square());
 			}
+			// when click on the delete button
 			else if (command.equals("Delete")){
-				if (multiShape.size()>1) {
+				if (multiShape.size()>1) { //Check whether have selected shape or not
 					for (int i = multiShape.size() - 1; i >= 0; i--) {
 				    Shape s = (Shape)multiShape.get(i);
 				    multiShape.remove(s);
@@ -65,37 +83,53 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 				else{
 				for ( int i = shp.size() - 1; i >= 0; i-- ) {  // check shapes from front to back
 					Shape s = (Shape)shp.get(i);
-					if (s.containsPoint(currentX,currentY)) {
+					if (s.containsPoint(currentX,currentY)) { // if the coordinate of shape is same with mouse click
 							shp.remove(s);
-							repaint();  // repaint canvas to show shape in front of other shapes
+							repaint();  //remove the shape that been select
 					}
 				}
 				}
 			}
 			else if(command.equals("Align")){
-				System.out.println("Click Align");
-				Collections.sort(coordinate, new PointCompare());
-				System.out.println("Sort");
+				Collections.sort(shp, new PointCompare());
+				int distance = 0;
 				for(int j=0; j<coordinate.size();j++){
 					for(int i=0; i<shp.size();i++){
 				
 						Shape s = (Shape)shp.get(i);
 						Point p = (Point)coordinate.get(j);
 						if(s.containsPoint(p.getX(), p.getY())){
-							System.out.println("save new shape");
+							//System.out.println(s.getX());
+							//System.out.println(s.getY());
+							
 							newShp.add(s);
-							System.out.println(p.getX() + p.getY());
 						}
-						else	
-							System.out.println("Wrong Align");
+						}
+				}
+				for(int i = 0; i<newShp.size();i++){
+					Shape nS = (Shape)newShp.get(i);
+					for(int j = 0; j<shp.size();j++){
+						Shape s = (Shape)shp.get(j);
+						if(nS == s){
+							shp.remove(nS);
+							shp.add(nS);
+						}
 					}
 				}
 				repaint();
-				int top = coordinate.size();
-				for (int i = 0; i < top; i++) {
-					Point s = (Point)coordinate.get(i);
-					setHorizontalAlignment(0, s.getY(), getGraphics());
-				}
+				distance = 800 / shp.size();
+				int newX = 0;
+				for (int i = 0; i < coordinate.size(); i++) {
+					Point p = (Point)coordinate.get(i);
+					Shape s = (Shape)shp.get(i);
+					int newY = (int)p.getY();
+					s.getPosition(newX,newY,100,50);
+						//y = s.getY();
+						s.draw(getGraphics());
+						newX += distance;
+						//System.out.println(p.getX());
+						//System.out.println(p.getY());
+					}
 				
 			}
 			
@@ -112,11 +146,6 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 			}	
 		}
 		
-	private void setHorizontalAlignment(double x, double y,
-				Graphics graphics) {
-			// TODO Auto-generated method stub
-			
-		}
 
 	void addShape(Shape shape) {
         // Add the shape to the canvas, and set its size/position and color.
@@ -137,7 +166,7 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 		int y = rd.nextInt((maxY - minY) + 1) + minY;
 		Point pnt = new Point(0,0);
 		shape.setColor(currentColor);
-		shape.reshape(x,y,100,50);
+		shape.getPosition(x,y,100,50);
 		shp.add(shape);
 		
 		pnt.setLocation(x, y);
@@ -217,6 +246,7 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 		     if (s.containsPoint(currentX,currentY)) {
 		    	 s.setColor(Color.RED);
 		    	 multiShape.add(s);
+		    	 
 		     }
 		     
 	         }
@@ -229,10 +259,12 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 	     Shape s = (Shape)shp.get(i);
 	     if (s.containsPoint(currentX,currentY)) {
 	    	 s.setColor(Color.RED);
+	    	 //System.out.println(s.left); 
 	     }
 	     else{
 	    	 prevColor = s.getColor();
 	    	 s.setColor(currentColor);
+	    	System.out.println(s);
 	    	 }
          }
        
@@ -268,10 +300,12 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 			     }
 			     }
 			     for (int i = 0; i < top; i++) {
-				     Shape s = (Shape)multiShape.get(i);
-				     
+				     Shape mS = (Shape)multiShape.get(i);
+				     Shape s = (Shape)shp.get(i);
 			     if (shapeBeingDragged != null) {
 			    	 shapeBeingDragged.moveBy(x - prevDragX1, y - prevDragY1);
+			    	 multiShape.equals(shapeBeingDragged);
+			    	 shp.equals(shapeBeingDragged);
 			    	 //shapeBeingDragged.moveBy(currentX - prevDragX2, currentY - prevDragY2);
 			    	 if ( shapeBeingDragged.left >= getSize().width || shapeBeingDragged.top >= getSize().height ||
 		               shapeBeingDragged.left + shapeBeingDragged.width < 0 ||
@@ -279,6 +313,7 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 			    		 multiShape.remove(shapeBeingDragged);  // remove shape from list of shapes
 			    	 }
 			    	 shapeBeingDragged = null;
+			    	 
 			    	 repaint();
 			     }
 			     }
@@ -296,6 +331,9 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 				
 				if (shapeBeingDragged != null) {
 					shapeBeingDragged.moveBy(x - prevDragX1, y - prevDragY1);
+					multiShape.equals(shapeBeingDragged);
+			    	shp.equals(shapeBeingDragged);
+			    	System.out.println(shp); 
 					if ( shapeBeingDragged.left >= getSize().width || shapeBeingDragged.top >= getSize().height ||
 							shapeBeingDragged.left + shapeBeingDragged.width < 0 ||
 							shapeBeingDragged.top + shapeBeingDragged.height < 0 ) {  // shape is off-screen
@@ -373,17 +411,19 @@ public class TestMain extends JPanel implements MouseMotionListener, MouseListen
 			currentColor = shapeColor;
 			
 		}
-		public void setHorizontalAlignment(int x, int y,Graphics g){
+		/*public void setHorizontalAlignment(int x, int y,Graphics g){
 			int top = newShp.size();
 			for (int i = 0; i < top; i++) {
 				Shape s = (Shape)newShp.get(i);
-				Point p = (Point)coordinate.get(i);
-				s.reshape(x,(int) p.getY(),100,50);
+				//oint p = (Point)coordinate.get(i);
+				//s.reshape(x,y,100,50);
 				//y = s.getY();
-				s.draw(g);
-				x += 100;
+				//s.draw(g);
+				//x += 100;
+				System.out.println(x);
+				System.out.println(y);
 			}
-		}
+		}*/
 		      
 		public class PointCompare
         implements Comparator<Point> {
