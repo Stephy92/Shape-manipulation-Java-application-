@@ -3,7 +3,7 @@ import java.awt.*;
 import javax.swing.JPanel;
 
 
-public abstract class Shape extends JPanel {
+public abstract class Shape {
 	
 	int left, top;      // Position of top left corner of shapes
     int width, height;  // Size of shapes
